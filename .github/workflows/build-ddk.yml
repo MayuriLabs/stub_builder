@@ -1,0 +1,52 @@
+name: Build DDK
+
+on:
+  workflow_call:
+    inputs:
+      kmi:
+        description: 'KMI version'
+        required: true
+        type: string
+      ddk_release:
+        description: 'DDK release to use'
+        required: true
+        type: string
+
+
+jobs:
+  build:
+    name: Build for ${{ inputs.kmi }}
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ylarod/ddk:${{ inputs.kmi }}-${{ inputs.ddk_release }}
+      options: --privileged
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v6
+
+      - name: Build Module
+        run: |
+          git config --global --add safe.directory /__w/stub_builder/stub_builder
+
+          cd kernel
+
+          echo "=== Building alsps_stub.ko ==="
+          CONFIG_ALSP_STUB=m CC=clang make -j$(nproc)
+          
+          echo "=== Build completed ==="
+          
+          # Create output directory
+          mkdir -p /github/workspace/out
+          
+          # Find and copy the built module
+          cp alsps_stub.ko /github/workspace/out/
+          
+          echo "Stripping module..."
+          llvm-strip -d /github/workspace/out/alsps_stub.ko
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: alsps_stub-${{ inputs.kmi }}
+          path: /github/workspace/out/*.ko

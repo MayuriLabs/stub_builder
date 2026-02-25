@@ -1,0 +1,16 @@
+name: Build LKM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-lkm:
+    strategy:
+      matrix:
+        kmi:
+          - android12-5.10
+          - android15-6.6
+    uses: ./.github/workflows/build-ddk.yml
+    with:
+      kmi: ${{ matrix.kmi }}
+      ddk_release: '20251104'

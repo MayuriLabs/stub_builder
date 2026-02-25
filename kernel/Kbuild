@@ -1,0 +1,1 @@
+obj-$(CONFIG_ALSP_STUB) += alsps_stub.o

@@ -1,0 +1,11 @@
+out/
+/github/workspace/
+clang/
+*.o
+*.ko
+*.mod.c
+*.mod
+*.order
+*.symvers
+.tmp_versions/
+.*.cmd

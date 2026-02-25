@@ -1,0 +1,4 @@
+config ALSP_STUB
+    tristate "ALSPS Hub stub Driver"
+    help
+      This is a stub driver for the ALSPS Hub sensor.
