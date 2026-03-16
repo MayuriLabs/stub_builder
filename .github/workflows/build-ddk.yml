@@ -42,11 +42,14 @@ jobs:
           # Find and copy the built module
           cp alsps_stub.ko /github/workspace/out/
           
+          echo "Patching module CRCs..."
+          python3 patch_stub.py /github/workspace/out/alsps_stub.ko ${{ inputs.kmi }}
+          
           echo "Stripping module..."
           llvm-strip -d /github/workspace/out/alsps_stub.ko
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: alsps_stub-${{ inputs.kmi }}
+          name: alsps_stub-${{ inputs.kmi }}-${{ github.run_id }}
           path: /github/workspace/out/*.ko

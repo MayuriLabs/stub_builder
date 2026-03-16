@@ -12,17 +12,6 @@ int ps_enable_register_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL(ps_enable_register_notifier);
 
-int ps_enable_unregister_notifier(struct notifier_block *nb)
-{
-    return 0;
-}
-EXPORT_SYMBOL_GPL(ps_enable_unregister_notifier);
-
-int ps_enable_notifier_call_chain(unsigned long val, void *v) { return 0; }
-EXPORT_SYMBOL_GPL(ps_enable_notifier_call_chain);
-
-int ps_send_touch_event(int32_t data) { return 0; }
-EXPORT_SYMBOL_GPL(ps_send_touch_event);
 
 int ps_register_recive_touch_event_callback(void) { return 0; }
 EXPORT_SYMBOL_GPL(ps_register_recive_touch_event_callback);
@@ -40,39 +29,16 @@ EXPORT_SYMBOL(alsps_driver_add);
 int (*ps_tpd)(struct notifier_block *nb) = NULL;
 EXPORT_SYMBOL_GPL(ps_tpd);
 
+
 /*
- * SCP / SensorHub Core Stubs
- * These allow you to skip loading scp.ko and sensorHub.ko
+ * HQ Notifier Stubs
+ * Used by touch drivers in Android 15 (Kernel 6.6)
  */
-int scp_A_register_notify(void *nb) { return 0; }
-EXPORT_SYMBOL(scp_A_register_notify);
+int register_hq_notify(void *nb) { return 0; }
+EXPORT_SYMBOL(register_hq_notify);
 
-int scp_A_unregister_notify(void *nb) { return 0; }
-EXPORT_SYMBOL(scp_A_unregister_notify);
-
-int scp_ipi_registration(int id, void *handler, void *data) { return 0; }
-EXPORT_SYMBOL(scp_ipi_registration);
-
-int scp_ipi_send(int id, void *buf, unsigned int len, unsigned int wait) { return 0; }
-EXPORT_SYMBOL(scp_ipi_send);
-
-int scp_get_reserve_mem_phys(void *addr) { return 0; }
-EXPORT_SYMBOL(scp_get_reserve_mem_phys);
-
-int scp_get_reserve_mem_virt(void *addr) { return 0; }
-EXPORT_SYMBOL(scp_get_reserve_mem_virt);
-
-int scp_get_reserve_mem_size(void) { return 0; }
-EXPORT_SYMBOL(scp_get_reserve_mem_size);
-
-int scp_register_feature(void *f) { return 0; }
-EXPORT_SYMBOL(scp_register_feature);
-
-int scp_sensorHub_data_registration(void *data) { return 0; }
-EXPORT_SYMBOL(scp_sensorHub_data_registration);
-
-int scp_power_monitor_register(void *nb) { return 0; }
-EXPORT_SYMBOL(scp_power_monitor_register);
+int unregister_hq_notify(void *nb) { return 0; }
+EXPORT_SYMBOL(unregister_hq_notify);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MediaTek SCP/SensorHub Dependency Stub for Recovery");
