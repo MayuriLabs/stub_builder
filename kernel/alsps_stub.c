@@ -41,4 +41,5 @@ int unregister_hq_notify(void *nb) { return 0; }
 EXPORT_SYMBOL(unregister_hq_notify);
 
 MODULE_LICENSE("GPL");
+MODULE_AUTHOR("wulan17");
 MODULE_DESCRIPTION("MediaTek SCP/SensorHub Dependency Stub for Recovery");

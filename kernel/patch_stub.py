@@ -79,11 +79,28 @@ def patch_elf_symtab(ko_path, kmi):
         name_bytes = bytes(data[name_start:].split(b'\0')[0])
         
         if name_bytes in target_crcs:
-            old_val, = struct.unpack('<Q', data[sym_off+8:sym_off+16])
+            st_value, = struct.unpack('<Q', data[sym_off+8:sym_off+16])
+            st_shndx, = struct.unpack('<H', data[sym_off+6:sym_off+8])
             new_val = target_crcs[name_bytes]
-            data[sym_off+8:sym_off+16] = struct.pack('<Q', new_val)
-            print(f"Patched {name_bytes.decode()}: {hex(old_val)} -> {hex(new_val)}")
-            patched += 1
+            
+            if st_shndx == 0xfff1: # SHN_ABS
+                data[sym_off+8:sym_off+16] = struct.pack('<Q', new_val)
+                print(f"Patched {name_bytes.decode()}: {hex(st_value)} -> {hex(new_val)} (SHN_ABS)")
+                patched += 1
+            else:
+                # Target is an offset in section st_shndx
+                sec_hdr = e_shoff + st_shndx * e_shentsize
+                sec_offset, sec_size = struct.unpack('<QQ', data[sec_hdr+24:sec_hdr+40])
+                crc_ptr = sec_offset + st_value
+                
+                if crc_ptr + 4 > len(data):
+                    print(f"Warning: crc_ptr out of bounds for {name_bytes.decode()} (corrupted st_value?)")
+                    continue
+
+                old_crc, = struct.unpack('<I', data[crc_ptr:crc_ptr+4])
+                data[crc_ptr:crc_ptr+4] = struct.pack('<I', new_val & 0xFFFFFFFF)
+                print(f"Patched {name_bytes.decode()} (sec {st_shndx} offset {hex(st_value)}): old_crc {hex(old_crc)} -> new_crc {hex(new_val)}")
+                patched += 1
             
     print(f"Total patched: {patched}")
     
